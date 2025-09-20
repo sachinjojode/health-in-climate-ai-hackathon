@@ -1,0 +1,112 @@
+import { Message } from '../types';
+
+/**
+ * Data adapter for Health Notifier
+ * 
+ * This file contains stubbed API functions that return empty data by default.
+ * Replace the TODO comments with actual API calls to integrate with your backend.
+ */
+
+/**
+ * Fetch all messages for the inbox
+ * TODO: Replace with actual API call to fetch messages
+ * Example: GET /api/messages
+ */
+export async function listMessages(): Promise<Message[]> {
+  // TODO: Implement API call to fetch messages
+  // const response = await fetch('/api/messages');
+  // return response.json();
+  
+  // Return empty array by default
+  return [];
+}
+
+/**
+ * Fetch a specific message by ID
+ * TODO: Replace with actual API call to fetch single message
+ * Example: GET /api/messages/:id
+ */
+export async function getMessage(id: string): Promise<Message | null> {
+  // TODO: Implement API call to fetch single message
+  // const response = await fetch(`/api/messages/${id}`);
+  // return response.ok ? response.json() : null;
+  
+  // Return null by default (id parameter will be used when implementing real API)
+  console.log(`Fetching message with id: ${id}`);
+  return null;
+}
+
+/**
+ * Mark a message as read/unread
+ * TODO: Replace with actual API call to update message read status
+ * Example: PUT /api/messages/:id/read
+ */
+export async function markRead(id: string): Promise<void> {
+  // TODO: Implement API call to mark message as read
+  // await fetch(`/api/messages/${id}/read`, { method: 'PUT' });
+  
+  // No-op for now
+  console.log(`Marking message ${id} as read`);
+}
+
+/**
+ * Request a call for a specific message
+ * TODO: Replace with actual API call to request call
+ * Example: POST /api/calls/request
+ */
+export async function requestCall(messageId: string): Promise<void> {
+  // TODO: Implement API call to request call
+  // await fetch('/api/calls/request', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ messageId })
+  // });
+  
+  // No-op for now
+  console.log(`Requesting call for message ${messageId}`);
+}
+
+/**
+ * DEVELOPMENT ONLY: Load sample data for testing UI
+ * This function is only used when the dev button is enabled
+ * Remove this function in production
+ */
+export function loadSampleData(): Message[] {
+  const now = new Date();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+  const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+
+  return [
+    {
+      id: '1',
+      patientName: 'John Smith',
+      risk: 'high',
+      subject: 'Heat stroke symptoms detected',
+      preview: 'Patient showing signs of heat exhaustion and dehydration...',
+      body: 'Patient John Smith (ID: 12345) has been exhibiting symptoms consistent with heat stroke during today\'s outdoor activities. Temperature readings show 102.3°F with elevated heart rate. Immediate attention recommended. Please contact patient or emergency services if symptoms worsen.',
+      createdAt: oneHourAgo.toISOString(),
+      read: false
+    },
+    {
+      id: '2',
+      patientName: 'Maria Garcia',
+      risk: 'medium',
+      subject: 'Heat advisory warning',
+      preview: 'Patient in moderate risk zone for heat-related illness...',
+      body: 'Maria Garcia (ID: 67890) is currently in a moderate risk zone for heat-related illness. Environmental conditions are reaching dangerous levels. Recommend reducing outdoor activity and increasing fluid intake. Monitor closely for any symptom changes.',
+      createdAt: twoHoursAgo.toISOString(),
+      read: true
+    },
+    {
+      id: '3',
+      patientName: 'David Johnson',
+      risk: 'low',
+      subject: 'Routine heat monitoring update',
+      preview: 'Patient handling heat well, continue current precautions...',
+      body: 'David Johnson (ID: 11111) is handling the current heat conditions well. All vitals are within normal ranges. Continue current hydration and sun protection measures. Next check-in scheduled for 4 hours.',
+      createdAt: threeHoursAgo.toISOString(),
+      read: false
+    }
+  ];
+}
