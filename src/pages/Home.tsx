@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Message, FilterType } from '../types'
 import { listMessages, markRead, loadSampleData } from '../data/adapter'
 import { useToast } from '../components/Toast'
@@ -18,6 +19,7 @@ const Home: React.FC = () => {
   const [filter, setFilter] = useState<FilterType>('all')
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
   const { showToast } = useToast()
+  const navigate = useNavigate()
 
   // Load messages from adapter
   const loadMessages = useCallback(async () => {
@@ -89,10 +91,21 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Logo */}
+      {/* Header with Logo and Navigation */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <CuraViasLogo size="lg" />
+          <div className="flex items-center justify-between">
+            <CuraViasLogo size="lg" />
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Patient View</span>
+              <button
+                onClick={() => navigate('/doctor')}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Doctor Dashboard
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Message } from '../types'
 import { listMessages } from '../data/adapter'
 import PatientNotificationWidget from '../components/PatientNotificationWidget'
@@ -14,6 +15,7 @@ const DoctorDashboard: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const navigate = useNavigate()
 
   // Load messages on component mount
   useEffect(() => {
@@ -50,9 +52,16 @@ const DoctorDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <CuraViasLogo size="lg" />
             <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">Doctor Dashboard</span>
               <span className="text-sm text-gray-500">
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </span>
+              <button
+                onClick={() => navigate('/')}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              >
+                Patient View
+              </button>
               <button
                 onClick={handleRefresh}
                 disabled={loading}
