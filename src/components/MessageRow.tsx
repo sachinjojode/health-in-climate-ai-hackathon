@@ -5,7 +5,6 @@ interface MessageRowProps {
   message: Message
   onOpen: (message: Message) => void
   onToggleRead: (messageId: string) => void
-  onRequestCall: (messageId: string) => void
 }
 
 /**
@@ -15,8 +14,7 @@ interface MessageRowProps {
 const MessageRow: React.FC<MessageRowProps> = ({
   message,
   onOpen,
-  onToggleRead,
-  onRequestCall
+  onToggleRead
 }) => {
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -133,19 +131,6 @@ const MessageRow: React.FC<MessageRowProps> = ({
                 >
                   {message.read ? 'Mark as unread' : 'Mark as read'}
                 </button>
-                {message.risk === 'high' && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onRequestCall(message.id)
-                      setShowMenu(false)
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                    role="menuitem"
-                  >
-                    Request call
-                  </button>
-                )}
                 <button
                   disabled
                   className="w-full px-4 py-2 text-left text-sm text-gray-400 cursor-not-allowed"

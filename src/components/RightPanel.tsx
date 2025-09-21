@@ -7,7 +7,6 @@ interface RightPanelProps {
   message: Message | null
   onClose: () => void
   onToggleRead: (messageId: string) => void
-  onRequestCall: (messageId: string) => void
 }
 
 /**
@@ -17,8 +16,7 @@ interface RightPanelProps {
 const RightPanel: React.FC<RightPanelProps> = ({
   message,
   onClose,
-  onToggleRead,
-  onRequestCall
+  onToggleRead
 }) => {
   const panelRef = useRef<HTMLDivElement>(null)
   const resizeRef = useRef<HTMLDivElement>(null)
@@ -200,14 +198,6 @@ const RightPanel: React.FC<RightPanelProps> = ({
             >
               {assessmentCompleted ? 'Assessment Complete' : 'Rate Your Condition'}
             </button>
-            {message.risk === 'high' && (
-              <button
-                onClick={() => onRequestCall(message.id)}
-                className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 transition-colors focus-ring"
-              >
-                Request Call
-              </button>
-            )}
           </div>
         </div>
 

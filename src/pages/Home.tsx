@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Message, FilterType } from '../types'
-import { listMessages, markRead, requestCall, loadSampleData } from '../data/adapter'
+import { listMessages, markRead, loadSampleData } from '../data/adapter'
 import { useToast } from '../components/Toast'
 import TopWidgets from '../components/TopWidgets'
 import InboxToolbar from '../components/InboxToolbar'
@@ -85,17 +85,6 @@ const Home: React.FC = () => {
     }
   }, [selectedMessage, messages, showToast])
 
-  // Handle request call
-  const handleRequestCall = useCallback(async (messageId: string) => {
-    try {
-      // Call adapter (no-op for now)
-      await requestCall(messageId)
-      showToast("We'll call you soon.", 'success')
-    } catch (error) {
-      console.error('Failed to request call:', error)
-      showToast('Failed to request call', 'error')
-    }
-  }, [showToast])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -145,7 +134,6 @@ const Home: React.FC = () => {
             filter={filter}
             onOpenMessage={handleOpenMessage}
             onToggleRead={handleToggleRead}
-            onRequestCall={handleRequestCall}
           />
         </div>
       </div>
@@ -155,7 +143,6 @@ const Home: React.FC = () => {
         message={selectedMessage}
         onClose={handleClosePanel}
         onToggleRead={handleToggleRead}
-        onRequestCall={handleRequestCall}
       />
     </div>
   )

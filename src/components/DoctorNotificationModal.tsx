@@ -21,7 +21,7 @@ const DoctorNotificationModal: React.FC<DoctorNotificationModalProps> = ({
 
   const getRiskMessage = () => {
     if (patientRisk === 'high') {
-      return "Due to your high-risk status, Dr. Fitzpatrick's team has been immediately notified of your assessment."
+      return "Dr. Fitzpatrick's team has received your assessment and will review your information."
     }
     return "Your assessment data has been sent to Dr. Fitzpatrick's nursing team for review."
   }
@@ -64,14 +64,14 @@ const DoctorNotificationModal: React.FC<DoctorNotificationModalProps> = ({
 
         {/* Message */}
         <div className={`border-l-4 ${
-          patientRisk === 'high' ? 'border-red-500 bg-red-50' : 'border-amber-500 bg-amber-50'
+          patientRisk === 'high' ? 'border-blue-500 bg-blue-50' : 'border-amber-500 bg-amber-50'
         } p-4 mb-6`}>
           <p className="text-sm text-gray-700">
             {getRiskMessage()}
           </p>
           {patientRisk === 'high' && (
-            <p className="text-sm text-red-700 font-medium mt-2">
-              A healthcare professional will contact you within 30 minutes.
+            <p className="text-sm text-blue-700 font-medium mt-2">
+              A healthcare professional will contact you when needed.
             </p>
           )}
         </div>
@@ -99,17 +99,15 @@ const DoctorNotificationModal: React.FC<DoctorNotificationModalProps> = ({
           >
             Understood
           </button>
-          {patientRisk === 'high' && (
-            <button
-              onClick={() => {
-                // In a real app, this would trigger an emergency call
-                alert('Emergency contact would be initiated')
-              }}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            >
-              Emergency Call
-            </button>
-          )}
+          <button
+            onClick={() => {
+              // In a real app, this would request a call from the medical team
+              alert('Request for medical team call has been submitted')
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Request Call
+          </button>
         </div>
       </div>
     </div>

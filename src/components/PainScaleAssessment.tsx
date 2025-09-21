@@ -117,7 +117,7 @@ const PainScaleAssessment: React.FC<PainScaleAssessmentProps> = ({
       </div>
 
       <div className="mt-4 text-xs text-blue-600 text-center">
-        <p>This information helps Dr. Fitzpatrick's team monitor your condition</p>
+        <p>This information helps Dr. Fitzpatrick's team provide better care</p>
       </div>
     </div>
   )

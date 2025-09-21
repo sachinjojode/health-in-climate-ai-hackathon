@@ -7,7 +7,6 @@ interface InboxListProps {
   filter: FilterType
   onOpenMessage: (message: Message) => void
   onToggleRead: (messageId: string) => void
-  onRequestCall: (messageId: string) => void
 }
 
 /**
@@ -18,8 +17,7 @@ const InboxList: React.FC<InboxListProps> = ({
   messages,
   filter,
   onOpenMessage,
-  onToggleRead,
-  onRequestCall
+  onToggleRead
 }) => {
   // Filter messages based on current filter
   const filteredMessages = messages.filter((message) => {
@@ -87,7 +85,6 @@ const InboxList: React.FC<InboxListProps> = ({
             message={message}
             onOpen={onOpenMessage}
             onToggleRead={onToggleRead}
-            onRequestCall={onRequestCall}
           />
         ))}
       </div>
