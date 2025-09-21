@@ -81,10 +81,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className={`font-medium ${!message.read ? 'font-semibold' : ''}`}>
-              {message.patientName}
-            </span>
-            <span className={`font-medium ${!message.read ? 'font-semibold' : ''}`}>
-              {message.subject}
+              {message.patientName} - {message.subject}
             </span>
           </div>
           <p className="text-sm text-gray-600 truncate">
@@ -136,17 +133,19 @@ const MessageRow: React.FC<MessageRowProps> = ({
                 >
                   {message.read ? 'Mark as unread' : 'Mark as read'}
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onRequestCall(message.id)
-                    setShowMenu(false)
-                  }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                  role="menuitem"
-                >
-                  Request call
-                </button>
+                {message.risk === 'high' && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onRequestCall(message.id)
+                      setShowMenu(false)
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                    role="menuitem"
+                  >
+                    Request call
+                  </button>
+                )}
                 <button
                   disabled
                   className="w-full px-4 py-2 text-left text-sm text-gray-400 cursor-not-allowed"

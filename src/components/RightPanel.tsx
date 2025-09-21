@@ -120,12 +120,9 @@ const RightPanel: React.FC<RightPanelProps> = ({
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1 min-w-0">
               <h2 id="panel-title" className="text-lg font-semibold text-gray-900 mb-2">
-                {message.subject}
+                {message.patientName} - {message.subject}
               </h2>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-medium text-gray-700">
-                  {message.patientName}
-                </span>
                 <span className={`risk-pill ${message.risk}`}>
                   {message.risk}
                 </span>
@@ -153,12 +150,14 @@ const RightPanel: React.FC<RightPanelProps> = ({
             >
               {message.read ? 'Mark as unread' : 'Mark as read'}
             </button>
-            <button
-              onClick={() => onRequestCall(message.id)}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 transition-colors focus-ring"
-            >
-              Request Call
-            </button>
+            {message.risk === 'high' && (
+              <button
+                onClick={() => onRequestCall(message.id)}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 transition-colors focus-ring"
+              >
+                Request Call
+              </button>
+            )}
           </div>
         </div>
 
