@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Message } from '../types'
+import PainScaleAssessment from './PainScaleAssessment'
+import DoctorNotificationModal from './DoctorNotificationModal'
 
 interface RightPanelProps {
   message: Message | null
@@ -21,6 +23,10 @@ const RightPanel: React.FC<RightPanelProps> = ({
   const panelRef = useRef<HTMLDivElement>(null)
   const resizeRef = useRef<HTMLDivElement>(null)
   const isResizing = useRef(false)
+  const [showAssessment, setShowAssessment] = useState(false)
+  const [assessmentCompleted, setAssessmentCompleted] = useState(false)
+  const [showDoctorNotification, setShowDoctorNotification] = useState(false)
+  const [assessmentRating, setAssessmentRating] = useState<number>(0)
 
   // Handle ESC key to close panel
   useEffect(() => {
@@ -78,6 +84,18 @@ const RightPanel: React.FC<RightPanelProps> = ({
     }
   }, [message])
 
+  // Handle assessment completion
+  const handleAssessmentComplete = (rating: number) => {
+    setAssessmentRating(rating)
+    setAssessmentCompleted(true)
+    setShowAssessment(false)
+    
+    // Show doctor notification for medium and high risk patients
+    if (message && (message.risk === 'medium' || message.risk === 'high')) {
+      setShowDoctorNotification(true)
+    }
+  }
+
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
     return date.toLocaleString('en-US', {
@@ -120,12 +138,25 @@ const RightPanel: React.FC<RightPanelProps> = ({
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1 min-w-0">
               <h2 id="panel-title" className="text-lg font-semibold text-gray-900 mb-2">
-                {message.patientName} - {message.subject}
+                {message.subject}
               </h2>
               <div className="flex items-center gap-2 mb-2">
                 <span className={`risk-pill ${message.risk}`}>
                   {message.risk}
                 </span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm text-gray-600">From:</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-blue-700">
+                    Dr. Fitzpatrick's AI Assistant
+                  </span>
+                </div>
               </div>
               <p className="text-xs text-gray-500">
                 {formatTimestamp(message.createdAt)}
@@ -143,17 +174,28 @@ const RightPanel: React.FC<RightPanelProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => onToggleRead(message.id)}
               className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-md hover:bg-gray-200 transition-colors focus-ring"
             >
               {message.read ? 'Mark as unread' : 'Mark as read'}
             </button>
+            <button
+              onClick={() => setShowAssessment(true)}
+              disabled={assessmentCompleted}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors focus-ring ${
+                assessmentCompleted
+                  ? 'bg-green-100 text-green-700 border border-green-200'
+                  : 'bg-blue-100 text-blue-700 border border-blue-200 hover:bg-blue-200'
+              }`}
+            >
+              {assessmentCompleted ? 'Assessment Complete' : 'Rate Your Condition'}
+            </button>
             {message.risk === 'high' && (
               <button
                 onClick={() => onRequestCall(message.id)}
-                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 transition-colors focus-ring"
+                className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 transition-colors focus-ring"
               >
                 Request Call
               </button>
@@ -163,13 +205,47 @@ const RightPanel: React.FC<RightPanelProps> = ({
 
         {/* Body */}
         <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar" style={{ height: 'calc(100% - 140px)' }}>
-          <div className="prose prose-sm max-w-none">
+          {/* Message Content */}
+          <div className="prose prose-sm max-w-none mb-6">
             <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
               {message.body}
             </p>
           </div>
+
+          {/* Assessment Section */}
+          {showAssessment && (
+            <div className="mb-6">
+              <PainScaleAssessment
+                onComplete={handleAssessmentComplete}
+                patientRisk={message.risk}
+              />
+            </div>
+          )}
+
+          {/* Assessment Completed Status */}
+          {assessmentCompleted && !showAssessment && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="text-2xl">✅</div>
+                <div>
+                  <h4 className="font-semibold text-green-800">Assessment Submitted</h4>
+                  <p className="text-sm text-green-700">
+                    You rated your condition as {assessmentRating}/10. Thank you for providing this information.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Doctor Notification Modal */}
+      <DoctorNotificationModal
+        isOpen={showDoctorNotification}
+        onClose={() => setShowDoctorNotification(false)}
+        patientRisk={message.risk as 'medium' | 'high'}
+        assessmentRating={assessmentRating}
+      />
     </>
   )
 }
