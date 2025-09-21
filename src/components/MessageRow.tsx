@@ -62,8 +62,8 @@ const MessageRow: React.FC<MessageRowProps> = ({
 
   return (
     <div
-      className={`border-b border-gray-200 p-4 hover:bg-gray-50 cursor-pointer transition-colors focus-ring ${
-        !message.read ? 'bg-blue-50/50' : ''
+      className={`border-b border-cura-200 p-4 hover:bg-cura-50 cursor-pointer transition-colors focus-ring ${
+        !message.read ? 'bg-cura-100/50' : ''
       }`}
       onClick={handleRowClick}
       onKeyDown={handleKeyDown}
@@ -89,7 +89,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
 
         {/* Timestamp and menu */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-cura-600">
             {formatTimestamp(message.createdAt)}
           </span>
           
@@ -100,7 +100,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
                 e.stopPropagation()
                 setShowMenu(!showMenu)
               }}
-              className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
+              className="p-1 text-cura-400 hover:text-cura-600 focus:outline-none focus:text-cura-600"
               aria-label="Message options"
             >
               <svg
@@ -117,7 +117,7 @@ const MessageRow: React.FC<MessageRowProps> = ({
             {showMenu && (
               <div
                 ref={menuRef}
-                className="absolute right-0 top-8 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                className="absolute right-0 top-8 w-48 bg-white border border-cura-200 rounded-lg shadow-lg z-10"
                 role="menu"
               >
                 <button
@@ -126,14 +126,14 @@ const MessageRow: React.FC<MessageRowProps> = ({
                     onToggleRead(message.id)
                     setShowMenu(false)
                   }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                  className="w-full px-4 py-2 text-left text-sm text-cura-700 hover:bg-cura-100 focus:bg-cura-100 focus:outline-none"
                   role="menuitem"
                 >
                   {message.read ? 'Mark as unread' : 'Mark as read'}
                 </button>
                 <button
                   disabled
-                  className="w-full px-4 py-2 text-left text-sm text-gray-400 cursor-not-allowed"
+                  className="w-full px-4 py-2 text-left text-sm text-cura-400 cursor-not-allowed"
                   role="menuitem"
                 >
                   Open in full page
