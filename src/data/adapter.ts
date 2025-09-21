@@ -262,6 +262,119 @@ function generateMessageBody(patient: any): string {
 }
 
 /**
+ * Fetch weather data for a specific location
+ */
+export async function getWeatherData(locationCode: string = '101000'): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/weather-onecall/${locationCode}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error('API returned error');
+    }
+    
+    return data.weather;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    // Return null on error - components can handle fallback
+    return null;
+  }
+}
+
+/**
+ * Fetch AI weather risk analysis
+ */
+export async function getWeatherRiskAnalysis(locationCode: string = '101000'): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/weather-ai-analysis/${locationCode}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error('API returned error');
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error fetching weather risk analysis:', error);
+    return null;
+  }
+}
+
+/**
+ * Fetch environment metrics for all patients
+ */
+export async function getEnvironmentMetrics(): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/environment-metrics`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error('API returned error');
+    }
+    
+    return data.environment_metrics;
+  } catch (error) {
+    console.error('Error fetching environment metrics:', error);
+    return null;
+  }
+}
+
+/**
+ * Fetch patient survey completion notifications
+ * This would be called when patients complete their condition assessments
+ */
+export async function getPatientNotifications(): Promise<any[]> {
+  try {
+    // In a real implementation, this would be a dedicated notifications endpoint
+    // For now, we'll use the risk-patients endpoint and simulate notifications
+    const response = await fetch(`${API_BASE_URL}/risk-patients?include_ai_suggestions=true`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error('API returned error');
+    }
+    
+    // Transform patient data into notification format
+    const notifications = data.risk_patients?.map((patient: any, index: number) => ({
+      id: `notification-${patient.patient_id || index}`,
+      patientId: patient.patient_id?.toString() || index.toString(),
+      patientName: patient.patient_name || 'Unknown Patient',
+      risk: mapRiskLevel(patient.risk_level || patient.basic_risk?.risk_level),
+      type: 'survey_completed',
+      message: `Patient completed condition assessment (Risk Level: ${patient.basic_risk?.risk_level || 'Unknown'})`,
+      timestamp: new Date(Date.now() - Math.random() * 60 * 60 * 1000), // Random time within last hour
+      priority: patient.basic_risk?.risk_level?.toLowerCase() || 'low',
+      status: Math.random() > 0.5 ? 'read' : 'unread' // Random read status
+    })) || [];
+    
+    return notifications;
+  } catch (error) {
+    console.error('Error fetching patient notifications:', error);
+    return [];
+  }
+}
+
+/**
  * DEVELOPMENT ONLY: Load sample data for testing UI
  * This function is only used when the dev button is enabled
  * Remove this function in production
