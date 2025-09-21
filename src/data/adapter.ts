@@ -3,128 +3,67 @@ import { Message } from '../types';
 /**
  * Data adapter for Health Notifier
  * 
- * This file connects to the Flask backend API endpoints.
- * Make sure the backend is running on http://localhost:5000
+ * This file contains stubbed API functions that return empty data by default.
+ * Replace the TODO comments with actual API calls to integrate with your backend.
  */
 
-// Base API URL - change this if your backend runs on a different port
-const API_BASE_URL = 'http://localhost:5000/api';
-
-// For demo purposes, we'll use a hardcoded patient ID
-// In a real app, this would come from user authentication
-const DEMO_PATIENT_ID = 1;
-
 /**
- * Fetch all notifications for the inbox
- * Calls the backend API: GET /api/notifications/{patient_id}
+ * Fetch all messages for the inbox
+ * TODO: Replace with actual API call to fetch messages
+ * Example: GET /api/messages
  */
 export async function listMessages(): Promise<Message[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/notifications/${DEMO_PATIENT_ID}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch notifications');
-    }
-    
-    // Transform backend notifications to frontend Message format
-    return data.notifications.map((notification: any) => ({
-      id: notification.id.toString(),
-      patientName: `Patient ${notification.patient_id}`, // We'll get actual name from patient API
-      risk: notification.risk_level as 'low' | 'medium' | 'high',
-      subject: `${notification.notification_type.replace('_', ' ')} Alert`,
-      preview: notification.message.substring(0, 100) + (notification.message.length > 100 ? '...' : ''),
-      body: notification.message,
-      createdAt: notification.sent_at,
-      read: notification.read_status
-    }));
-    
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-    
-    // Return empty array if backend is not available
-    // This allows the frontend to work even without backend
-    return [];
-  }
+  // TODO: Implement API call to fetch messages
+  // const response = await fetch('/api/messages');
+  // return response.json();
+  
+  // Return empty array by default
+  return [];
 }
 
 /**
- * Fetch a specific notification by ID
- * Calls the backend API: GET /api/notifications/{patient_id}
+ * Fetch a specific message by ID
+ * TODO: Replace with actual API call to fetch single message
+ * Example: GET /api/messages/:id
  */
 export async function getMessage(id: string): Promise<Message | null> {
-  try {
-    // Get all notifications and find the one with matching ID
-    const messages = await listMessages();
-    return messages.find(msg => msg.id === id) || null;
-    
-  } catch (error) {
-    console.error('Error fetching message:', error);
-    return null;
-  }
+  // TODO: Implement API call to fetch single message
+  // const response = await fetch(`/api/messages/${id}`);
+  // return response.ok ? response.json() : null;
+  
+  // Return null by default (id parameter will be used when implementing real API)
+  console.log(`Fetching message with id: ${id}`);
+  return null;
 }
 
 /**
- * Mark a notification as read
- * Calls the backend API: POST /api/notifications/mark-read/{notification_id}
+ * Mark a message as read/unread
+ * TODO: Replace with actual API call to update message read status
+ * Example: PUT /api/messages/:id/read
  */
 export async function markRead(id: string): Promise<void> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/notifications/mark-read/${id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to mark notification as read');
-    }
-    
-    console.log(`Message ${id} marked as read successfully`);
-    
-  } catch (error) {
-    console.error('Error marking message as read:', error);
-    throw error; // Re-throw to let the UI handle the error
-  }
+  // TODO: Implement API call to mark message as read
+  // await fetch(`/api/messages/${id}/read`, { method: 'PUT' });
+  
+  // No-op for now
+  console.log(`Marking message ${id} as read`);
 }
 
 /**
  * Request a call for a specific message
- * This is a placeholder function since the backend doesn't have a call request API yet
- * You can implement this by adding a new API endpoint in the backend
+ * TODO: Replace with actual API call to request call
+ * Example: POST /api/calls/request
  */
 export async function requestCall(messageId: string): Promise<void> {
-  try {
-    // For now, we'll just log the request
-    // TODO: Implement actual call request API endpoint in backend
-    console.log(`Call request for message ${messageId} - would trigger emergency contact`);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // In a real implementation, this would call something like:
-    // await fetch(`${API_BASE_URL}/emergency/request-call`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ messageId, patientId: DEMO_PATIENT_ID })
-    // });
-    
-  } catch (error) {
-    console.error('Error requesting call:', error);
-    throw error;
-  }
+  // TODO: Implement API call to request call
+  // await fetch('/api/calls/request', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ messageId })
+  // });
+  
+  // No-op for now
+  console.log(`Requesting call for message ${messageId}`);
 }
 
 /**

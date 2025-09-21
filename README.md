@@ -1,139 +1,32 @@
 # Health Notifier
 
-A complete full-stack health notification system with React frontend and Flask backend. Features a Gmail-style inbox interface with real-time health risk monitoring and emergency notifications.
+A React + TypeScript + Vite frontend application for monitoring health notifications and heat risk alerts. Features a Gmail-style inbox interface with a resizable reading panel.
 
-## 🚀 Quick Start (Full Stack)
+## 🚀 Quick Start
 
-### Option 1: One-Click Start (Recommended)
-```bash
-# Linux/Mac
-./start.sh
-
-# Windows
-start.bat
-```
-
-### Option 2: Manual Start
-```bash
-# Terminal 1: Start Backend
-cd backend
-python setup.py  # First time only
-python main.py
-
-# Terminal 2: Start Frontend  
-npm install      # First time only
-npm run dev
-```
-
-**Access your app:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-
-## 📋 Prerequisites
+### Prerequisites
 
 - Node.js 18+ and npm
-- Python 3.8+
-- API Keys (see setup guide below)
 
-## 🔧 First Time Setup
+### Installation & Running
 
-### 1. Get API Keys
-You'll need API keys for the backend to work:
-
-- **Google Gemini AI**: https://makersuite.google.com/app/apikey (for health risk assessment)
-- **OpenWeatherMap**: https://openweathermap.org/api (for weather data)
-
-### 2. Configure Backend
 ```bash
-cd backend
-python setup.py
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-Edit `backend/.env` with your API keys:
-```env
-GEMINI_API_KEY=your_gemini_key_here
-WEATHER_API_KEY=your_weather_key_here
-```
-
-### 3. Start the Application
-Use the quick start commands above, or see `BACKEND_INTEGRATION_GUIDE.md` for detailed instructions.
+The app will be available at `http://localhost:3000`
 
 ## 📁 Project Structure
-
-```
-health-in-climate-ai-hackathon/
-├── src/                    # React frontend
-│   ├── components/        # UI components  
-│   ├── data/             # API adapter
-│   └── ...
-├── backend/               # Flask backend
-│   ├── app/              # Flask application
-│   ├── setup.py          # Easy setup script
-│   └── API_SETUP_GUIDE.md # API credentials guide
-├── start.sh              # One-click start (Linux/Mac)
-├── start.bat             # One-click start (Windows)
-└── BACKEND_INTEGRATION_GUIDE.md # Complete setup guide
-```
-
-## 🎯 Features
-
-### Frontend Features
-- **Modern React UI** with TypeScript and Tailwind CSS
-- **Gmail-style Interface** with resizable reading panel
-- **Real-time Notifications** with risk level indicators
-- **Responsive Design** for mobile and desktop
-- **Accessibility** with keyboard navigation and screen reader support
-
-### Backend Features  
-- **Flask REST API** with comprehensive health monitoring
-- **AI-powered Risk Assessment** using Google Gemini
-- **Weather Integration** for environmental health factors
-- **Database Management** with SQLAlchemy
-- **Emergency Notification System** for high-risk patients
-
-## 🔌 API Integration
-
-The frontend automatically connects to the backend APIs:
-
-- **GET** `/api/notifications/{patient_id}` - Fetch notifications
-- **POST** `/api/notifications/mark-read/{id}` - Mark as read
-- **GET** `/api/patients/{id}` - Get patient data
-- **GET** `/api/weather/{zip_code}` - Weather data
-- **POST** `/api/assess-risk/{id}` - Risk assessment
-
-## 📊 Sample Data
-
-The system includes sample data for testing:
-
-- **Sample Patients** with different risk profiles
-- **Test Notifications** with various risk levels
-- **Weather Data** for different locations
-- **Emergency Scenarios** for high-risk situations
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-1. **Backend won't start**: Check API keys in `backend/.env`
-2. **Frontend shows no data**: Ensure backend is running on port 5000
-3. **API errors**: Verify API keys are correct and active
-
-### Getting Help
-
-- **Setup Issues**: See `BACKEND_INTEGRATION_GUIDE.md`
-- **API Setup**: See `backend/API_SETUP_GUIDE.md`
-- **Frontend Issues**: Check browser console for errors
-
-## 📚 Documentation
-
-- **Complete Setup Guide**: `BACKEND_INTEGRATION_GUIDE.md`
-- **API Credentials**: `backend/API_SETUP_GUIDE.md`
-- **Backend Documentation**: `backend/docs/`
-- **Architecture Overview**: `backend/docs/ARCHITECTURE.md`
-
-## 🚀 Development
-
-### Frontend Development
 
 ```
 src/
