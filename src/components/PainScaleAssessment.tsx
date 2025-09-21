@@ -15,6 +15,12 @@ const PainScaleAssessment: React.FC<PainScaleAssessmentProps> = ({
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [isCompleted, setIsCompleted] = useState(false)
 
+  // Reset state when component mounts (every time it's opened)
+  React.useEffect(() => {
+    setSelectedRating(null)
+    setIsCompleted(false)
+  }, [])
+
   const painScaleData = [
     { value: 0, emoji: '😊', label: 'No pain', description: 'I feel great!' },
     { value: 2, emoji: '🙂', label: 'Mild', description: 'A little uncomfortable' },

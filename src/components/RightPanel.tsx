@@ -28,6 +28,14 @@ const RightPanel: React.FC<RightPanelProps> = ({
   const [showDoctorNotification, setShowDoctorNotification] = useState(false)
   const [assessmentRating, setAssessmentRating] = useState<number>(0)
 
+  // Reset assessment state when message changes or panel opens
+  useEffect(() => {
+    setAssessmentCompleted(false)
+    setShowAssessment(false)
+    setShowDoctorNotification(false)
+    setAssessmentRating(0)
+  }, [message?.id])
+
   // Handle ESC key to close panel
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -216,6 +224,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
           {showAssessment && (
             <div className="mb-6">
               <PainScaleAssessment
+                key={`assessment-${message.id}-${Date.now()}`}
                 onComplete={handleAssessmentComplete}
                 patientRisk={message.risk}
               />
