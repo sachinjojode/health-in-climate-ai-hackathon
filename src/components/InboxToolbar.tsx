@@ -26,7 +26,7 @@ const InboxToolbar: React.FC<InboxToolbarProps> = ({
   ]
 
   return (
-    <div className="bg-white border-b border-cura-200 px-6 py-4">
+    <div className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         {/* Filter buttons */}
         <div className="flex flex-wrap gap-2">
@@ -36,8 +36,8 @@ const InboxToolbar: React.FC<InboxToolbarProps> = ({
               onClick={() => onFilterChange(filter.value)}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors focus-ring ${
                 currentFilter === filter.value
-                  ? 'bg-cura-100 text-cura-700 border border-cura-300'
-                  : 'bg-cura-50 text-cura-700 hover:bg-cura-100 border border-cura-200'
+                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
               }`}
               aria-pressed={currentFilter === filter.value}
             >
@@ -52,7 +52,7 @@ const InboxToolbar: React.FC<InboxToolbarProps> = ({
           {onLoadSampleData && (
             <button
               onClick={onLoadSampleData}
-              className="px-3 py-1.5 text-xs font-medium text-cura-700 bg-cura-100 border border-cura-300 rounded-md hover:bg-cura-200 transition-colors focus-ring"
+              className="px-3 py-1.5 text-xs font-medium text-orange-700 bg-orange-100 border border-orange-200 rounded-md hover:bg-orange-200 transition-colors focus-ring"
               title="Load sample data for testing (dev only)"
             >
               Load Sample Data
@@ -62,7 +62,7 @@ const InboxToolbar: React.FC<InboxToolbarProps> = ({
           {/* Refresh button */}
           <button
             onClick={onRefresh}
-            className="px-3 py-1.5 text-sm font-medium text-cura-700 bg-cura-100 border border-cura-200 rounded-md hover:bg-cura-200 transition-colors focus-ring"
+            className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-md hover:bg-gray-200 transition-colors focus-ring"
             title="Refresh messages"
           >
             <span className="flex items-center gap-1">
