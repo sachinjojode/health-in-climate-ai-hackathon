@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { getWeatherData, getWeatherRiskAnalysis } from '../data/adapter'
 
 /**
  * Doctor Weather Widget - displays comprehensive weather data for medical professionals
@@ -102,15 +101,15 @@ const DoctorWeatherWidget: React.FC = () => {
         location: { name: 'Medical Center District' },
         risk_level: heatIndex >= 40 ? 'high' : heatIndex >= 35 ? 'medium' : 'low',
         health_concerns: heatIndex >= 40 
-          ? ['Heat stroke risk', 'Dehydration risk', 'Heat exhaustion']
+          ? ['Pregnancy heat stroke risk', 'Preterm labor risk', 'Fetal distress risk', 'Severe dehydration risk']
           : heatIndex >= 35
-          ? ['Heat exhaustion risk', 'Dehydration risk']
-          : ['Mild heat stress possible'],
+          ? ['Pregnancy heat exhaustion risk', 'Dehydration risk', 'Overheating risk']
+          : ['Mild pregnancy heat stress possible'],
         recommendations: heatIndex >= 40
-          ? ['Limit outdoor activities', 'Increase hydration', 'Monitor vulnerable patients']
+          ? ['Keep pregnant patients indoors', 'Extra hydration monitoring', 'Check for contractions', 'Monitor fetal movement', 'Emergency protocols ready']
           : heatIndex >= 35
-          ? ['Encourage frequent breaks', 'Monitor hydration', 'Check on elderly patients']
-          : ['Normal precautions', 'Regular hydration checks'],
+          ? ['Limit outdoor activities for pregnant patients', 'Frequent hydration checks', 'Monitor for overheating signs', 'Avoid hot baths/showers']
+          : ['Normal pregnancy precautions', 'Regular hydration monitoring', 'Heat avoidance education'],
         timestamp: new Date()
       }
       
@@ -291,7 +290,7 @@ const DoctorWeatherWidget: React.FC = () => {
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
-                Clinical Recommendations
+                Pregnancy-Specific Clinical Recommendations
               </div>
               <div className="space-y-2">
                 <div>

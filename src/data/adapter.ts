@@ -16,7 +16,7 @@ const API_BASE_URL = 'http://10.57.1.173:5000/api';
  */
 export async function listMessages(): Promise<Message[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/risk-patients?include_ai_suggestions=true`);
+    const response = await fetch(`${API_BASE_URL}/risk-patients?include_ai_suggestions=false`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -31,12 +31,12 @@ export async function listMessages(): Promise<Message[]> {
     // Transform patient risk data to Message format
     const messages: Message[] = data.risk_patients?.map((patient: any, index: number) => ({
       id: patient.patient_id?.toString() || index.toString(),
-      patientName: patient.patient_name || 'Unknown Patient',
+      patientName: patient.name || patient.patient_name || 'Unknown Patient',
       risk: mapRiskLevel(patient.risk_level || patient.basic_risk?.risk_level),
       subject: generateSubject(patient),
       preview: generatePreview(patient),
       body: generateMessageBody(patient),
-      createdAt: new Date().toISOString(), // Use current time as we don't have timestamp from API
+      createdAt: patient.updated_at || patient.created_at || new Date().toISOString(),
       read: false
     })) || [];
     
@@ -74,7 +74,7 @@ export async function getMessage(id: string): Promise<Message | null> {
       subject: generateSubject(patient),
       preview: generatePreview(patient),
       body: generateDetailedMessageBody(patient),
-      createdAt: new Date().toISOString(),
+      createdAt: patient.updated_at || patient.created_at || new Date().toISOString(),
       read: false
     };
   } catch (error) {
@@ -143,56 +143,100 @@ function mapRiskLevel(apiRiskLevel: string): 'low' | 'medium' | 'high' {
 }
 
 /**
- * Generates a subject line based on patient risk data
+ * Generates a subject line based on patient risk data with pregnancy context
  */
 function generateSubject(patient: any): string {
-  const riskLevel = patient.basic_risk?.risk_level || patient.overall_assessment?.risk_level || 'low';
-  const patientName = patient.patient_name || 'Unknown Patient';
+  const riskLevel = patient.risk_level || patient.basic_risk?.risk_level || patient.overall_assessment?.risk_level || 'low';
+  const patientName = patient.name || patient.patient_name || 'Unknown Patient';
+  const pregnancyWeeks = patient.pregnancy_weeks;
+  const trimester = patient.trimester;
+  
+  // Create pregnancy context
+  const pregnancyContext = pregnancyWeeks ? ` (${pregnancyWeeks} weeks, Trimester ${trimester})` : '';
   
   switch (riskLevel.toLowerCase()) {
     case 'high':
-      return `${patientName} - High heat risk detected - Immediate attention needed`;
+      return `${patientName}${pregnancyContext} - High heat risk detected - Immediate attention needed`;
     case 'medium':
-      return `${patientName} - Moderate heat risk - Monitor conditions`;
+      return `${patientName}${pregnancyContext} - Moderate heat risk - Monitor conditions`;
     default:
-      return `${patientName} - Routine heat monitoring update`;
+      return `${patientName}${pregnancyContext} - Routine heat monitoring update`;
   }
 }
 
 /**
- * Generates a preview text based on patient risk data
+ * Generates a preview text based on patient risk data with pregnancy context
  */
 function generatePreview(patient: any): string {
-  const riskLevel = patient.basic_risk?.risk_level || patient.overall_assessment?.risk_level || 'low';
+  const riskLevel = patient.risk_level || patient.basic_risk?.risk_level || patient.overall_assessment?.risk_level || 'low';
   const concerns = patient.overall_assessment?.immediate_concerns || [];
+  const pregnancyWeeks = patient.pregnancy_weeks;
   
   if (concerns.length > 0) {
-    return `Patient concerns: ${concerns.slice(0, 2).join(', ')}...`;
+    return `Pregnancy concerns: ${concerns.slice(0, 2).join(', ')}...`;
   }
+  
+  const pregnancyContext = pregnancyWeeks ? `${pregnancyWeeks} weeks pregnant` : 'pregnant patient';
   
   switch (riskLevel.toLowerCase()) {
     case 'high':
-      return 'Patient at high risk for heat-related illness. Immediate monitoring recommended.';
+      return `${pregnancyContext} at high risk for heat-related complications. Immediate monitoring recommended.`;
     case 'medium':
-      return 'Patient in moderate risk zone. Continue monitoring and precautions.';
+      return `${pregnancyContext} in moderate risk zone. Monitor for heat stress and fetal well-being.`;
     default:
-      return 'Patient handling heat conditions well. Continue current precautions.';
+      return `${pregnancyContext} handling heat conditions well. Continue current precautions.`;
   }
 }
 
 /**
- * Generates detailed message body for comprehensive assessment
+ * Generates detailed message body for comprehensive assessment with pregnancy data
  */
 function generateDetailedMessageBody(patient: any): string {
-  const patientName = patient.patient_name || 'Unknown Patient';
+  const patientName = patient.name || patient.patient_name || 'Unknown Patient';
   const patientId = patient.patient_id || 'Unknown ID';
-  const riskLevel = patient.overall_assessment?.risk_level || patient.basic_risk?.risk_level || 'low';
+  const riskLevel = patient.overall_assessment?.risk_level || patient.basic_risk?.risk_level || patient.risk_level || 'low';
   const concerns = patient.overall_assessment?.immediate_concerns || [];
   const recommendations = patient.recommendations || [];
   const aiSuggestions = patient.ai_suggestions || {};
   
-  let body = `Patient ${patientName} (ID: ${patientId}) - ${riskLevel.toUpperCase()} RISK ASSESSMENT\n\n`;
+  // Pregnancy information
+  const pregnancyWeeks = patient.pregnancy_weeks;
+  const trimester = patient.trimester;
+  const pregnancyDescription = patient.pregnancy_description;
+  const conditions = patient.conditions || [];
+  const medications = patient.medications || [];
   
+  let body = `Patient ${patientName} (ID: ${patientId}) - ${riskLevel.toUpperCase()} PREGNANCY RISK ASSESSMENT\n\n`;
+  
+  // Pregnancy details
+  if (pregnancyWeeks) {
+    body += `Pregnancy Information:\n`;
+    body += `• Gestational Age: ${pregnancyWeeks} weeks (Trimester ${trimester})\n`;
+    if (pregnancyDescription) {
+      body += `• Pregnancy Status: ${pregnancyDescription}\n`;
+    }
+    body += '\n';
+  }
+  
+  // Medical conditions
+  if (conditions.length > 0) {
+    body += `Medical Conditions:\n`;
+    conditions.forEach((condition: string) => {
+      body += `• ${condition}\n`;
+    });
+    body += '\n';
+  }
+  
+  // Current medications
+  if (medications.length > 0) {
+    body += `Current Medications:\n`;
+    medications.forEach((med: string) => {
+      body += `• ${med}\n`;
+    });
+    body += '\n';
+  }
+  
+  // Immediate concerns
   if (concerns.length > 0) {
     body += `Immediate Concerns:\n`;
     concerns.forEach((concern: string) => {
@@ -201,6 +245,7 @@ function generateDetailedMessageBody(patient: any): string {
     body += '\n';
   }
   
+  // Recommendations
   if (recommendations.length > 0) {
     body += `Recommendations:\n`;
     recommendations.forEach((rec: string) => {
@@ -209,6 +254,7 @@ function generateDetailedMessageBody(patient: any): string {
     body += '\n';
   }
   
+  // AI suggestions
   if (aiSuggestions.immediate_actions && aiSuggestions.immediate_actions.length > 0) {
     body += `Immediate Actions:\n`;
     aiSuggestions.immediate_actions.forEach((action: string) => {
@@ -231,29 +277,36 @@ function generateDetailedMessageBody(patient: any): string {
 }
 
 /**
- * Generates basic message body for list view
+ * Generates basic message body for list view with pregnancy context
  */
 function generateMessageBody(patient: any): string {
-  const patientName = patient.patient_name || 'Unknown Patient';
+  const patientName = patient.name || patient.patient_name || 'Unknown Patient';
   const patientId = patient.patient_id || 'Unknown ID';
-  const riskLevel = patient.basic_risk?.risk_level || 'low';
+  const riskLevel = patient.risk_level || patient.basic_risk?.risk_level || 'low';
   const concerns = patient.overall_assessment?.immediate_concerns || [];
+  const pregnancyWeeks = patient.pregnancy_weeks;
+  const trimester = patient.trimester;
   
-  let body = `Patient ${patientName} (ID: ${patientId}) has been assessed for heat-related health risks.\n\n`;
+  let body = `Patient ${patientName} (ID: ${patientId}) has been assessed for heat-related health risks during pregnancy.\n\n`;
+  
+  // Add pregnancy context
+  if (pregnancyWeeks) {
+    body += `Pregnancy Status: ${pregnancyWeeks} weeks (Trimester ${trimester})\n\n`;
+  }
   
   if (concerns.length > 0) {
-    body += `Current concerns include: ${concerns.slice(0, 3).join(', ')}.\n\n`;
+    body += `Current pregnancy concerns include: ${concerns.slice(0, 3).join(', ')}.\n\n`;
   }
   
   switch (riskLevel.toLowerCase()) {
     case 'high':
-      body += 'Risk Level: HIGH - Immediate attention recommended. Monitor closely for any symptom changes.\n\n';
+      body += 'Pregnancy Risk Level: HIGH - Heat exposure can increase risk of preterm labor, birth defects, and dehydration. Immediate attention recommended.\n\n';
       break;
     case 'medium':
-      body += 'Risk Level: MEDIUM - Continue monitoring and follow recommended precautions.\n\n';
+      body += 'Pregnancy Risk Level: MEDIUM - Monitor for signs of dehydration, overheating, and fetal distress. Avoid prolonged heat exposure.\n\n';
       break;
     default:
-      body += 'Risk Level: LOW - Continue current hydration and sun protection measures.\n\n';
+      body += 'Pregnancy Risk Level: LOW - Continue current hydration, sun protection, and heat avoidance measures. Monitor for any changes in fetal movement.\n\n';
   }
   
   body += `This message was sent by Dr. Fitzpatrick's AI assistant. Please complete the condition assessment below.`;
@@ -335,6 +388,125 @@ export async function getEnvironmentMetrics(): Promise<any> {
 }
 
 /**
+ * Fetch all patients with pagination
+ * This is used for the Patient Information widget in the Doctor Dashboard
+ */
+export async function getAllPatients(page: number = 1, perPage: number = 10): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/patients?page=${page}&per_page=${perPage}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error('API returned error');
+    }
+    
+    return {
+      patients: data.patients || [],
+      total: data.total || 0,
+      pages: data.pages || 1,
+      currentPage: data.current_page || page
+    };
+  } catch (error) {
+    console.error('Error fetching all patients:', error);
+    return {
+      patients: [],
+      total: 0,
+      pages: 1,
+      currentPage: 1
+    };
+  }
+}
+
+/**
+ * Stream all patients with comprehensive risk data
+ * This uses the streaming API for handling large datasets efficiently
+ */
+export async function streamAllPatients(
+  onBatch: (patients: any[], processedCount: number, totalPatients: number) => void,
+  onMetadata: (metadata: any) => void,
+  onSummary: (summary: any) => void,
+  onError: (error: string) => void,
+  options: {
+    riskLevel?: 'low' | 'medium' | 'high';
+    location?: string;
+    batchSize?: number;
+    includeAiSuggestions?: boolean;
+    includeNotifications?: boolean;
+  } = {}
+): Promise<void> {
+  try {
+    const params = new URLSearchParams();
+    
+    if (options.riskLevel) params.append('risk_level', options.riskLevel);
+    if (options.location) params.append('location', options.location);
+    if (options.batchSize) params.append('batch_size', options.batchSize.toString());
+    if (options.includeAiSuggestions !== undefined) params.append('include_ai_suggestions', options.includeAiSuggestions.toString());
+    if (options.includeNotifications !== undefined) params.append('include_notifications', options.includeNotifications.toString());
+    
+    const url = `${API_BASE_URL}/patients/with-risks/stream${params.toString() ? '?' + params.toString() : ''}`;
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    if (!response.body) {
+      throw new Error('Response body is null');
+    }
+    
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      
+      if (done) break;
+      
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || ''; // Keep incomplete line in buffer
+      
+      for (const line of lines) {
+        if (line.trim()) {
+          try {
+            const data = JSON.parse(line);
+            
+            switch (data.type) {
+              case 'metadata':
+                onMetadata(data);
+                break;
+              case 'batch':
+                onBatch(data.patients || [], data.processed_count || 0, data.total_patients || 0);
+                break;
+              case 'summary':
+                onSummary(data);
+                break;
+              case 'error':
+                onError(data.error || 'Unknown streaming error');
+                break;
+              default:
+                console.warn('Unknown streaming message type:', data.type);
+            }
+          } catch (parseError) {
+            console.error('Error parsing streaming data:', parseError, 'Line:', line);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in streaming patients:', error);
+    onError(error instanceof Error ? error.message : 'Unknown streaming error');
+  }
+}
+
+/**
  * Fetch patient survey completion notifications
  * This would be called when patients complete their condition assessments
  */
@@ -358,12 +530,12 @@ export async function getPatientNotifications(): Promise<any[]> {
     const notifications = data.risk_patients?.map((patient: any, index: number) => ({
       id: `notification-${patient.patient_id || index}`,
       patientId: patient.patient_id?.toString() || index.toString(),
-      patientName: patient.patient_name || 'Unknown Patient',
+      patientName: patient.name || patient.patient_name || 'Unknown Patient',
       risk: mapRiskLevel(patient.risk_level || patient.basic_risk?.risk_level),
       type: 'survey_completed',
-      message: `Patient completed condition assessment (Risk Level: ${patient.basic_risk?.risk_level || 'Unknown'})`,
+      message: `Pregnant patient completed condition assessment (${patient.pregnancy_weeks ? `${patient.pregnancy_weeks} weeks, ` : ''}Risk Level: ${patient.risk_level || patient.basic_risk?.risk_level || 'Unknown'})`,
       timestamp: new Date(Date.now() - Math.random() * 60 * 60 * 1000), // Random time within last hour
-      priority: patient.basic_risk?.risk_level?.toLowerCase() || 'low',
+      priority: (patient.risk_level || patient.basic_risk?.risk_level || 'low').toLowerCase(),
       status: Math.random() > 0.5 ? 'read' : 'unread' // Random read status
     })) || [];
     
@@ -388,11 +560,11 @@ export function loadSampleData(): Message[] {
   return [
     {
       id: '1',
-      patientName: 'John Smith',
+      patientName: 'Sarah Williams',
       risk: 'high',
-      subject: 'John Smith - High heat risk detected - Immediate attention needed',
-      preview: 'Patient at high risk for heat-related illness. Immediate monitoring recommended.',
-      body: 'Patient John Smith (ID: 12345) has been assessed for heat-related health risks.\n\nCurrent concerns include: Extreme heat wave conditions, Elevated heart rate.\n\nRisk Level: HIGH - Immediate attention recommended. Monitor closely for any symptom changes.\n\nThis message was sent by Dr. Fitzpatrick\'s AI assistant. Please complete the condition assessment below.',
+      subject: 'Sarah Williams - High heat risk detected - Immediate attention needed',
+      preview: 'Pregnant patient at high risk for heat-related complications. Immediate monitoring recommended.',
+      body: 'Patient Sarah Williams (ID: 12345) has been assessed for heat-related health risks during pregnancy.\n\nCurrent concerns include: Extreme heat wave conditions, Elevated body temperature, Dehydration risk.\n\nPregnancy Risk Level: HIGH - Heat exposure can increase risk of preterm labor, birth defects, and dehydration. Immediate attention recommended.\n\nThis message was sent by Dr. Fitzpatrick\'s AI assistant. Please complete the condition assessment below.',
       createdAt: oneHourAgo.toISOString(),
       read: false
     },
@@ -401,18 +573,18 @@ export function loadSampleData(): Message[] {
       patientName: 'Maria Garcia',
       risk: 'medium',
       subject: 'Maria Garcia - Moderate heat risk - Monitor conditions',
-      preview: 'Patient in moderate risk zone. Continue monitoring and precautions.',
-      body: 'Patient Maria Garcia (ID: 67890) has been assessed for heat-related health risks.\n\nCurrent concerns include: High humidity levels, Outdoor activity exposure.\n\nRisk Level: MEDIUM - Continue monitoring and follow recommended precautions.\n\nThis message was sent by Dr. Fitzpatrick\'s AI assistant. Please complete the condition assessment below.',
+      preview: 'Pregnant patient in moderate risk zone. Continue monitoring and precautions.',
+      body: 'Patient Maria Garcia (ID: 67890) has been assessed for heat-related health risks during pregnancy.\n\nCurrent concerns include: High humidity levels, Outdoor activity exposure, Heat stress symptoms.\n\nPregnancy Risk Level: MEDIUM - Monitor for signs of dehydration, overheating, and fetal distress. Avoid prolonged heat exposure.\n\nThis message was sent by Dr. Fitzpatrick\'s AI assistant. Please complete the condition assessment below.',
       createdAt: twoHoursAgo.toISOString(),
       read: true
     },
     {
       id: '3',
-      patientName: 'David Johnson',
+      patientName: 'Emily Davis',
       risk: 'low',
-      subject: 'David Johnson - Routine heat monitoring update',
-      preview: 'Patient handling heat conditions well. Continue current precautions.',
-      body: 'Patient David Johnson (ID: 11111) has been assessed for heat-related health risks.\n\nRisk Level: LOW - Continue current hydration and sun protection measures.\n\nThis message was sent by Dr. Fitzpatrick\'s AI assistant. Please complete the condition assessment below.',
+      subject: 'Emily Davis - Routine heat monitoring update',
+      preview: 'Pregnant patient handling heat conditions well. Continue current precautions.',
+      body: 'Patient Emily Davis (ID: 11111) has been assessed for heat-related health risks during pregnancy.\n\nPregnancy Risk Level: LOW - Continue current hydration, sun protection, and heat avoidance measures. Monitor for any changes in fetal movement.\n\nThis message was sent by Dr. Fitzpatrick\'s AI assistant. Please complete the condition assessment below.',
       createdAt: threeHoursAgo.toISOString(),
       read: false
     }

@@ -245,14 +245,14 @@ const TopWidgets: React.FC = () => {
         
         <div className="mt-4 p-3 bg-blue-50 rounded-lg">
           <div className="text-sm font-medium text-blue-900 mb-1">
-            💡 Recommendation
+            💡 Pregnancy Health Recommendation
           </div>
           <div className="text-xs text-blue-700">
             {weatherData.heatIndex >= 90 
-              ? "Stay hydrated and limit outdoor activities"
+              ? "🚨 High heat risk for pregnancy: Stay indoors, drink extra water, monitor for contractions or decreased fetal movement"
               : weatherData.heatIndex >= 80
-              ? "Take breaks in shade and drink water regularly"
-              : "Enjoy outdoor activities with sun protection"
+              ? "⚠️ Moderate heat risk: Limit outdoor time, stay hydrated, avoid hot baths/showers, watch for overheating signs"
+              : "✅ Safe conditions: Continue normal activities with adequate hydration and sun protection"
             }
           </div>
         </div>

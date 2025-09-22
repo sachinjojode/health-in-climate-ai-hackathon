@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Message } from '../types'
 import { listMessages } from '../data/adapter'
 import PatientNotificationWidget from '../components/PatientNotificationWidget'
-import WeatherDataWidget from '../components/WeatherDataWidget'
-import PatientHealthWidget from '../components/PatientHealthWidget'
+import DoctorWeatherWidget from '../components/DoctorWeatherWidget'
+import PatientRiskChart from '../components/PatientRiskChart'
+import PatientInfoWidget from '../components/PatientInfoWidget'
 import CuraViasLogo from '../components/CuraViasLogo'
 
 /**
@@ -156,7 +157,23 @@ const DoctorDashboard: React.FC = () => {
         </div>
 
         {/* Main Dashboard Widgets */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Patient Risk Distribution Chart */}
+          <div className="lg:col-span-1">
+            <PatientRiskChart 
+              messages={messages}
+              loading={loading}
+            />
+          </div>
+
+          {/* Weather Conditions */}
+          <div className="lg:col-span-1">
+            <DoctorWeatherWidget />
+          </div>
+        </div>
+
+        {/* Patient Notifications and Information */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Patient Notifications */}
           <div className="lg:col-span-1">
             <PatientNotificationWidget 
@@ -166,19 +183,13 @@ const DoctorDashboard: React.FC = () => {
             />
           </div>
 
-          {/* Weather Data */}
+          {/* Patient Information */}
           <div className="lg:col-span-1">
-            <WeatherDataWidget />
+            <PatientInfoWidget 
+              loading={loading}
+              onRefresh={handleRefresh}
+            />
           </div>
-        </div>
-
-        {/* Patient Health Information */}
-        <div className="mt-8">
-          <PatientHealthWidget 
-            messages={messages}
-            onRefresh={handleRefresh}
-            loading={loading}
-          />
         </div>
       </div>
     </div>
